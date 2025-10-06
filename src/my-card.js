@@ -1,9 +1,7 @@
 import { LitElement, html, css } from 'lit';
 
 export class MyCard extends LitElement {
-  static get tag() {
-    return 'my-card';
-  }
+  static get tag() { return 'my-card'; }
 
   static get properties() {
     return {
@@ -14,7 +12,7 @@ export class MyCard extends LitElement {
       location: { type: String, reflect: true },
       href: { type: String, reflect: true },
       fancy: { type: Boolean, reflect: true },
-      description: { type: String, reflect: true },
+      description: { type: String, reflect: true }
     };
   }
 
@@ -39,6 +37,8 @@ export class MyCard extends LitElement {
         --card-title-bg: #eee;
         --card-body-bg: white;
         --card-body-fg: black;
+        --my-card-fancy-bg: gold;
+        --my-card-fancy-shadow: 10px 5px 20px rgba(0,0,0,.25);
         display: inline-block;
       }
       .card {
@@ -47,79 +47,48 @@ export class MyCard extends LitElement {
         border: 2px solid var(--card-border);
         padding: 8px;
         margin: 8px;
-        opacity: .8;
+        opacity: .9;
         background-color: var(--card-bg);
-        transition: .6s all ease-in-out;
+        transition: .3s all ease-in-out;
         color: var(--card-fg);
-      }
-      .card:hover,
-      .card:focus-within {
-        opacity: 1;
-        outline: 2px solid green;
-        outline-offset: 16px;
-      }
-      .card-media img {
-        display: block;
-        width: 200px;
-        height: 100%;
-        object-fit: cover;
-      }
-      .card-body {
-        width: 300px;
-        padding: 0 8px 8px 8px;
-        background-color: var(--card-body-bg);
-        color: var(--card-body-fg);
-        margin: 0 0 0 8px;
-        height: 300px;
-        overflow: auto;
-      }
-      .card-title {
-        position: sticky;
-        top: 0;
-        background-color: var(--card-title-bg);
-        text-align: center;
-        font-size: 2em;
-        padding: 8px 8px 16px;
-        margin: 0 -8px;
-      }
-      .meta {
-        margin: 0 0 12px;
-        color: #444;
-        font-size: 0.95em;
-      }
-      .btn {
-        display: inline-block;
-        padding: 8px 16px;
-        border: 1px solid #222;
-        border-radius: 6px;
-        color: #222;
-        text-decoration: none;
+        border-radius: 12px;
       }
       :host([fancy]) .card {
-        background-color: orange;
+        background-color: var(--my-card-fancy-bg);
         color: #111;
-        border-color: orange;
+        border-color: var(--my-card-fancy-bg);
+        box-shadow: var(--my-card-fancy-shadow);
       }
     `;
   }
 
+  openChanged(e) {
+    const isOpen = e.target.getAttribute('open') !== null;
+    this.fancy = isOpen;
+  }
+
   render() {
     return html`
-      <article class="card" aria-labelledby="card-title">
+      <section class="card" aria-labelledby="card-title">
         <figure class="card-media">
-          <img class="card-image" src="${this.img}" alt="${this.alt}" width="400" height="225" />
+          <img class="card-image" src="${this.img}" alt="${this.alt}" />
         </figure>
         <div class="card-body">
           <h2 id="card-title" class="card-title">${this.title}</h2>
           <p class="meta">
             <time>${this.datetime}</time>${this.location ? html` • ${this.location}` : ''}
           </p>
-          <p>${this.description}</p>
-          <div class="card-actions">
+          <details ?open="${this.fancy}" @toggle="${this.openChanged}">
+            <summary>Description</summary>
+            <div>
+              <slot>${this.description}</slot>
+            </div>
+          </details>
+          <div class="card-actions" style="margin-top: 12px;">
             <a class="btn" href="${this.href}" target="_blank" rel="noopener">Details</a>
           </div>
         </div>
-      </article>
+      </section>
     `;
   }
 }
